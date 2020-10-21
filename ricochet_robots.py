@@ -20,7 +20,7 @@ class RRState:
         RRState.state_id += 1
 
     def __lt__(self, other):
-    	""" Este método é utilizado em caso de empate na gestão da lista
+        """ Este método é utilizado em caso de empate na gestão da lista
         de abertos nas procuras informadas. """
         return self.id < other.id
 
@@ -39,8 +39,9 @@ class Board:
 def parse_instance(filename: str) -> Board:
     """ Lê o ficheiro cujo caminho é passado como argumento e retorna
     uma instância da classe Board. """
+    f = open(filename, "r")
+    f.readline()
     # TODO
-    pass
 
 
 class RicochetRobots(Problem):
@@ -82,4 +83,5 @@ if __name__ == "__main__":
     # Usar uma técnica de procura para resolver a instância,
     # Retirar a solução a partir do nó resultante,
     # Imprimir para o standard output no formato indicado.
-    pass
+    
+	parse_instance(sys.argv[1])
