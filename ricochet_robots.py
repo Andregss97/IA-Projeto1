@@ -65,6 +65,12 @@ class Board:
                 print(attr)
                 return (Robot.pos)
 
+    def change_RobotsPos(self, color: str, new_pos: tuple):
+        for Robot in self.Robots:
+            attr = getattr(Robot, "color")
+            if(attr == color):
+                Robot.pos = new_pos
+
     def get_robots(self):
         for robot in self.Robots:
             print("cor:", robot.color, "pos:", robot.pos)
@@ -119,10 +125,10 @@ def parse_instance(filename: str) -> Board:
     board.init_walls(walls)
 
     print(board.robot_position("Y"))
-    Board.get_robots(board)
+    board.get_robots()
     print("Cor Obj:", board.obj_color, "Pos Obj:", board.obj_pos)
     print("Numero de walls:", board.nrWalls)
-    Board.get_Walls(board)
+    board.get_Walls()
 
     return board
 
@@ -195,7 +201,9 @@ class RicochetRobots(Problem):
 
                     else:
                         actions.append((robot.color, 'r'))
-        
+
+#------------------------------------------------------------------------------------------#
+
         return actions
 
     def result(self, state: RRState, action):
@@ -203,8 +211,31 @@ class RicochetRobots(Problem):
         'state' passado como argumento. A ação retornada deve ser uma
         das presentes na lista obtida pela execução de
         self.actions(state). """
-        # TODO
-        pass
+        actions = self.actions(state)
+
+        for x in actions:
+            if(x == action):
+                if(x[1] == 'l'):
+                    robot_pos = state.board.robot_position(x[0])
+                    state.board.change_RobotsPos(x[0], (robot_pos[0], robot_pos[1]-1))
+                    self.result(state, action)
+                elif(x[1] == 'r'):
+                    robot_pos = state.board.robot_position(x[0])
+                    state.board.change_RobotsPos(x[0], (robot_pos[0], robot_pos[1]+1))
+                    self.result(state, action)
+                elif(x[1] == 'u'):
+                    robot_pos = state.board.robot_position(x[0])
+                    state.board.change_RobotsPos(x[0], (robot_pos[0]-1, robot_pos[1]))
+                    self.result(state, action)
+                elif(x[1] == 'd'):
+                    robot_pos = state.board.robot_position(x[0])
+                    state.board.change_RobotsPos(x[0], (robot_pos[0]+1, robot_pos[1]))
+                    self.result(state, action)
+
+        return state
+                
+
+
 
     def goal_test(self, state: RRState):
         """ Retorna True se e só se o estado passado como argumento é
@@ -229,5 +260,7 @@ if __name__ == "__main__":
     board = parse_instance(sys.argv[1])
     problem = RicochetRobots(board)
     initial_state = RRState(board)
-    print(problem.actions(initial_state))
+    #print(problem.actions(initial_state))
+    state = problem.result(initial_state, ('Y', 'r'))
+    state.board.get_robots()
 
