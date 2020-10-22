@@ -80,8 +80,8 @@ def parse_instance(filename: str) -> Board:
     robots = []
     walls = []
     f = open(filename, "r")
-    
-    board = Board(f.readline())
+
+    board = Board(int(f.readline()))
 
     for x in range(1, 5):
         line = f.readline()
@@ -117,8 +117,19 @@ class RicochetRobots(Problem):
     def actions(self, state: RRState):
         """ Retorna uma lista de ações que podem ser executadas a
         partir do estado passado como argumento. """
+        actions = []
         board = state.board
-        print(board.robot_position("Y"))
+        for robot in board.Robots:
+            if((robot.pos[0]-1)>0):
+                actions.append((robot.color, 'l'))
+            if((robot.pos[0]+1)<board.size):
+                actions.append((robot.color, 'r'))
+            if((robot.pos[1]-1)>0):
+                actions.append((robot.color, 'u'))
+            if((robot.pos[1]+1)<board.size):
+                actions.append((robot.color, 'd'))
+        
+        return actions
 
     def result(self, state: RRState, action):
         """ Retorna o estado resultante de executar a 'action' sobre
@@ -148,4 +159,8 @@ if __name__ == "__main__":
     # Retirar a solução a partir do nó resultante,
     # Imprimir para o standard output no formato indicado.
     
-	parse_instance(sys.argv[1])
+    board = parse_instance(sys.argv[1])
+    problem = RicochetRobots(board)
+    initial_state = RRState(board)
+    print(problem.actions(initial_state))
+
