@@ -28,20 +28,85 @@ class RRState:
 class Board:
     """ Representacao interna de um tabuleiro de Ricochet Robots. """
 
+    class Robot:
+
+        def __init__(self, color: str, pos: tuple):
+            self.color = color
+            self.pos = pos
+
+    class Wall:
+
+        def __init__(self, wall_pos: tuple, wall_dir: str):
+            self.wall_pos = wall_pos
+            self.wall_dir = wall_dir
+
+
+    def __init__(self, size: int):
+        self.size = size
+
+    def Walls_nr(self, nrWalls: int):
+        self.nrWalls = nrWalls
+    
+    def init_robots(self, Robots: Robot):
+        self.Robots = Robots
+
+    def init_walls(self, walls: Wall):
+        self.Walls = walls
+
+    def set_Objective(self, color: str, pos: int):
+        self.obj_color = color
+        self.obj_pos = pos
+
     def robot_position(self, robot: str):
         """ Devolve a posição atual do robô passado como argumento. """
-        # TODO
-        pass
+        for Robot in self.Robots:
+            attr = getattr(Robot, "color")
+            if(attr == robot):
+                print(attr)
+                return (Robot.pos)
 
-    # TODO: outros metodos da classe
+    def get_robots(self):
+        for robot in self.Robots:
+            print("cor:", robot.color, "pos:", robot.pos)
+
+    def get_Walls(self):
+        for wall in self.Walls:
+            print("pos:", wall.wall_pos, "dir:", wall.wall_dir)
 
 
 def parse_instance(filename: str) -> Board:
     """ Lê o ficheiro cujo caminho é passado como argumento e retorna
     uma instância da classe Board. """
+    robots = []
+    walls = []
     f = open(filename, "r")
-    f.readline()
-    # TODO
+
+    board = Board(f.readline())
+
+    for x in range(1, 5):
+        line = f.readline()
+        robots.append(Board.Robot(line[0], (int(line[2]), int(line[4]))))
+
+    Board.init_robots(board, robots)
+
+    line = f.readline()
+    Board.set_Objective(board, line[0], (int(line[2]), int(line[4])))
+
+    Board.Walls_nr(board, int(f.readline()))
+
+    for x in range(0, board.nrWalls):
+        line = f.readline()
+        walls.append(Board.Wall((int(line[0]), int(line[2])), line[4]))
+
+    Board.init_walls(board, walls)
+
+    print(Board.robot_position(board, "Y"))
+    Board.get_robots(board)
+    print("Cor Obj:", board.obj_color, "Pos Obj:", board.obj_pos)
+    print("Numero de walls:", board.nrWalls)
+    Board.get_Walls(board)
+
+    return board
 
 
 class RicochetRobots(Problem):
