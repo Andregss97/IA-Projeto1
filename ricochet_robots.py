@@ -28,6 +28,9 @@ class RRState:
 class Board:
     """ Representacao interna de um tabuleiro de Ricochet Robots. """
 
+    def __init__(self, size: int):
+        self.size = size
+
     class Robot:
 
         def __init__(self, color: str, pos: tuple):
@@ -40,9 +43,6 @@ class Board:
             self.wall_pos = wall_pos
             self.wall_dir = wall_dir
 
-
-    def __init__(self, size: int):
-        self.size = size
 
     def Walls_nr(self, nrWalls: int):
         self.nrWalls = nrWalls
@@ -80,27 +80,27 @@ def parse_instance(filename: str) -> Board:
     robots = []
     walls = []
     f = open(filename, "r")
-
+    
     board = Board(f.readline())
 
     for x in range(1, 5):
         line = f.readline()
-        robots.append(Board.Robot(line[0], (int(line[2]), int(line[4]))))
+        robots.append(board.Robot(line[0], (int(line[2]), int(line[4]))))
 
-    Board.init_robots(board, robots)
+    board.init_robots(robots)
 
     line = f.readline()
-    Board.set_Objective(board, line[0], (int(line[2]), int(line[4])))
+    board.set_Objective(line[0], (int(line[2]), int(line[4])))
 
-    Board.Walls_nr(board, int(f.readline()))
+    board.Walls_nr(int(f.readline()))
 
     for x in range(0, board.nrWalls):
         line = f.readline()
-        walls.append(Board.Wall((int(line[0]), int(line[2])), line[4]))
+        walls.append(board.Wall((int(line[0]), int(line[2])), line[4]))
 
-    Board.init_walls(board, walls)
+    board.init_walls(walls)
 
-    print(Board.robot_position(board, "Y"))
+    print(board.robot_position("Y"))
     Board.get_robots(board)
     print("Cor Obj:", board.obj_color, "Pos Obj:", board.obj_pos)
     print("Numero de walls:", board.nrWalls)
@@ -112,14 +112,13 @@ def parse_instance(filename: str) -> Board:
 class RicochetRobots(Problem):
     def __init__(self, board: Board):
         """ O construtor especifica o estado inicial. """
-        # TODO: self.initial = ...
-        pass
+        self.initial = RRState(board)
 
     def actions(self, state: RRState):
         """ Retorna uma lista de ações que podem ser executadas a
         partir do estado passado como argumento. """
-        # TODO
-        pass
+        board = state.board
+        print(board.robot_position("Y"))
 
     def result(self, state: RRState, action):
         """ Retorna o estado resultante de executar a 'action' sobre
