@@ -73,6 +73,24 @@ class Board:
         for wall in self.Walls:
             print("pos:", wall.wall_pos, "dir:", wall.wall_dir)
 
+    def robotIsInPos(self, pos: tuple):
+        for robot in self.Robots:
+            if(robot.pos == pos):
+                return True
+        return False
+
+    def wallIsInPos(self, pos: tuple):
+        for wall in self.Walls:
+            if(wall.wall_pos == pos):
+                return True
+        return False
+
+    def getWallDir( self, pos: tuple):
+        for wall in self.Walls:
+            if(wall.wall_pos == pos):
+                return wall.wall_dir
+        return None
+
 
 def parse_instance(filename: str) -> Board:
     """ Lê o ficheiro cujo caminho é passado como argumento e retorna
@@ -117,17 +135,66 @@ class RicochetRobots(Problem):
     def actions(self, state: RRState):
         """ Retorna uma lista de ações que podem ser executadas a
         partir do estado passado como argumento. """
+        #Fazer para os casos em que a parede está na posição ao lado
         actions = []
         board = state.board
         for robot in board.Robots:
+
+#------------------------------------------------------------------------------------------#            
             if((robot.pos[0]-1)>0):
-                actions.append((robot.color, 'l'))
+                if(board.robotIsInPos(((robot.pos[0]-1), robot.pos[1])) == False):
+                    if(board.wallIsInPos(robot.pos)):
+                        if(board.getWallDir(robot.pos) != 'u'):
+                            actions.append((robot.color, 'u'))
+                    
+                    elif(board.wallIsInPos((robot.pos[0]-1, robot.pos[1]))):
+                        if(board.getWallDir((robot.pos[0]-1, robot.pos[1])) != 'd'):
+                            actions.append((robot.color, 'u'))
+
+                    else:
+                        actions.append((robot.color, 'u'))
+
+#------------------------------------------------------------------------------------------#
             if((robot.pos[0]+1)<=board.size):
-                actions.append((robot.color, 'r'))
+                if(board.robotIsInPos(((robot.pos[0]+1), robot.pos[1])) == False):
+                    if(board.wallIsInPos(robot.pos)):
+                        if(board.getWallDir(robot.pos) != 'd'):
+                            actions.append((robot.color, 'd'))
+                    
+                    elif(board.wallIsInPos((robot.pos[0]+1, robot.pos[1]))):
+                        if(board.getWallDir((robot.pos[0]+1, robot.pos[1])) != 'u'):
+                            actions.append((robot.color, 'd'))
+
+                    else:
+                        actions.append((robot.color, 'd'))
+
+#------------------------------------------------------------------------------------------#
             if((robot.pos[1]-1)>0):
-                actions.append((robot.color, 'u'))
+                if(board.robotIsInPos(((robot.pos[0]), robot.pos[1]-1)) == False):
+                    if(board.wallIsInPos(robot.pos)):
+                        if(board.getWallDir(robot.pos) != 'l'):
+                            actions.append((robot.color, 'l'))
+
+                    elif(board.wallIsInPos((robot.pos[0], robot.pos[1]-1))):
+                        if(board.getWallDir((robot.pos[0], robot.pos[1]-1)) != 'r'):
+                            actions.append((robot.color, 'l'))
+
+                    else:
+                        actions.append((robot.color, 'l'))
+
+#------------------------------------------------------------------------------------------#
             if((robot.pos[1]+1)<=board.size):
-                actions.append((robot.color, 'd'))
+                if(board.robotIsInPos(((robot.pos[0]), robot.pos[1]+1)) == False):
+                    if(board.wallIsInPos(robot.pos)):
+                        if(board.getWallDir(robot.pos) != 'r'):
+                            actions.append((robot.color, 'r'))
+                    
+                    elif(board.wallIsInPos((robot.pos[0], robot.pos[1]+1))):
+                        if(board.getWallDir((robot.pos[0], robot.pos[1]+1)) != 'l'):
+                            actions.append((robot.color, 'r'))
+
+                    else:
+                        actions.append((robot.color, 'r'))
         
         return actions
 
