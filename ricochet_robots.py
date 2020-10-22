@@ -122,11 +122,11 @@ class RicochetRobots(Problem):
         for robot in board.Robots:
             if((robot.pos[0]-1)>0):
                 actions.append((robot.color, 'l'))
-            if((robot.pos[0]+1)<board.size):
+            if((robot.pos[0]+1)<=board.size):
                 actions.append((robot.color, 'r'))
             if((robot.pos[1]-1)>0):
                 actions.append((robot.color, 'u'))
-            if((robot.pos[1]+1)<board.size):
+            if((robot.pos[1]+1)<=board.size):
                 actions.append((robot.color, 'd'))
         
         return actions
