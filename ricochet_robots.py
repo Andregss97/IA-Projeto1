@@ -62,7 +62,6 @@ class Board:
         for Robot in self.Robots:
             attr = getattr(Robot, "color")
             if(attr == robot):
-                print(attr)
                 return (Robot.pos)
 
     def change_RobotsPos(self, color: str, new_pos: tuple):
@@ -124,7 +123,6 @@ def parse_instance(filename: str) -> Board:
 
     board.init_walls(walls)
 
-    print(board.robot_position("Y"))
     board.get_robots()
     print("Cor Obj:", board.obj_color, "Pos Obj:", board.obj_pos)
     print("Numero de walls:", board.nrWalls)
@@ -241,8 +239,10 @@ class RicochetRobots(Problem):
         """ Retorna True se e só se o estado passado como argumento é
         um estado objetivo. Deve verificar se o alvo e o robô da
         mesma cor ocupam a mesma célula no tabuleiro. """
-        # TODO
-        pass
+        pos = state.board.robot_position(state.board.obj_color)
+        if(pos == state.board.obj_pos):
+            return True 
+        return False
 
     def h(self, node: Node):
         """ Função heuristica utilizada para a procura A*. """
@@ -259,8 +259,13 @@ if __name__ == "__main__":
     
     board = parse_instance(sys.argv[1])
     problem = RicochetRobots(board)
-    initial_state = RRState(board)
-    #print(problem.actions(initial_state))
-    state = problem.result(initial_state, ('Y', 'r'))
-    state.board.get_robots()
+    s0 = RRState(board)
+    s1 = problem.result(s0, ('B', 'l'))
+    s2 = problem.result(s1, ('Y', 'u'))
+    s3 = problem.result(s2, ('R', 'r'))
+    s4 = problem.result(s3, ('R', 'u'))
+    print(problem.goal_test(s3))
+    print(s4.board.robot_position('R'))
+    board.get_robots()
+    board.get_Walls()
 
