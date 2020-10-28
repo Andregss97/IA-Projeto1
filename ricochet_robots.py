@@ -9,6 +9,7 @@
 from search import Problem, Node, astar_search, breadth_first_tree_search, \
     depth_first_tree_search, greedy_search
 import sys
+import operator
 
 
 class RRState:
@@ -30,6 +31,7 @@ class Board:
 
     def __init__(self, size: int):
         self.size = size
+        self.valor_h = 0
 
     class Robot:
 
@@ -106,7 +108,7 @@ def parse_instance(filename: str) -> Board:
 
     board = Board(int(f.readline()))
 
-    for x in range(1, 5):
+    for x in range(4):
         line = f.readline()
         robots.append(board.Robot(line[0], (int(line[2]), int(line[4]))))
 
@@ -216,18 +218,22 @@ class RicochetRobots(Problem):
                 if(x[1] == 'l'):
                     robot_pos = state.board.robot_position(x[0])
                     state.board.change_RobotsPos(x[0], (robot_pos[0], robot_pos[1]-1))
+                    state.board.valor_h += 1
                     self.result(state, action)
                 elif(x[1] == 'r'):
                     robot_pos = state.board.robot_position(x[0])
                     state.board.change_RobotsPos(x[0], (robot_pos[0], robot_pos[1]+1))
+                    state.board.valor_h += 1
                     self.result(state, action)
                 elif(x[1] == 'u'):
                     robot_pos = state.board.robot_position(x[0])
                     state.board.change_RobotsPos(x[0], (robot_pos[0]-1, robot_pos[1]))
+                    state.board.valor_h += 1
                     self.result(state, action)
                 elif(x[1] == 'd'):
                     robot_pos = state.board.robot_position(x[0])
                     state.board.change_RobotsPos(x[0], (robot_pos[0]+1, robot_pos[1]))
+                    state.board.valor_h += 1
                     self.result(state, action)
 
         return state
@@ -246,9 +252,12 @@ class RicochetRobots(Problem):
 
     def h(self, node: Node):
         """ Função heuristica utilizada para a procura A*. """
-        # TODO
-        pass
-
+        tuple_obj = tuple(map(operator.sub, node.state.board.obj_pos, node.state.board.robot_position(node.state.board.obj_color))) 
+        dist_obj = (abs(tuple_obj[0]) + abs(tuple_obj[1]))
+        dist_res = node.state.board.valor_h
+        print(dist_res)
+        print(dist_obj)
+        return dist_obj + dist_res
 
 if __name__ == "__main__":
     # TODO:
@@ -259,13 +268,5 @@ if __name__ == "__main__":
     
     board = parse_instance(sys.argv[1])
     problem = RicochetRobots(board)
-    s0 = RRState(board)
-    s1 = problem.result(s0, ('B', 'l'))
-    s2 = problem.result(s1, ('Y', 'u'))
-    s3 = problem.result(s2, ('R', 'r'))
-    s4 = problem.result(s3, ('R', 'u'))
-    print(problem.goal_test(s3))
-    print(s4.board.robot_position('R'))
-    board.get_robots()
-    board.get_Walls()
-
+    solution_node = astar_search(problem)
+    print(solution_node)
