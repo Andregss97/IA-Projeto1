@@ -278,14 +278,10 @@ def best_first_graph_search(problem, f, display=False):
             return node
         explored.add(node.state)
         for child in node.expand(problem):
-            print("entrei", child.path_cost)
             if child.state not in explored and child not in frontier:
-                print("entrei2")
                 frontier.append(child)
             elif child in frontier:
-                print("entrei3")
                 if f(child) < frontier[child]:
-                    print("entrei4")
                     del frontier[child]
                     frontier.append(child)
     return None

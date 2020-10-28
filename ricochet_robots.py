@@ -31,7 +31,6 @@ class Board:
 
     def __init__(self, size: int):
         self.size = size
-        self.valor_h = 0
 
     class Robot:
 
@@ -125,10 +124,10 @@ def parse_instance(filename: str) -> Board:
 
     board.init_walls(walls)
 
-    board.get_robots()
-    print("Cor Obj:", board.obj_color, "Pos Obj:", board.obj_pos)
-    print("Numero de walls:", board.nrWalls)
-    board.get_Walls()
+    #board.get_robots()
+    #print("Cor Obj:", board.obj_color, "Pos Obj:", board.obj_pos)
+    #print("Numero de walls:", board.nrWalls)
+    #board.get_Walls()
 
     return board
 
@@ -218,22 +217,18 @@ class RicochetRobots(Problem):
                 if(x[1] == 'l'):
                     robot_pos = state.board.robot_position(x[0])
                     state.board.change_RobotsPos(x[0], (robot_pos[0], robot_pos[1]-1))
-                    state.board.valor_h += 1
                     self.result(state, action)
                 elif(x[1] == 'r'):
                     robot_pos = state.board.robot_position(x[0])
                     state.board.change_RobotsPos(x[0], (robot_pos[0], robot_pos[1]+1))
-                    state.board.valor_h += 1
                     self.result(state, action)
                 elif(x[1] == 'u'):
                     robot_pos = state.board.robot_position(x[0])
                     state.board.change_RobotsPos(x[0], (robot_pos[0]-1, robot_pos[1]))
-                    state.board.valor_h += 1
                     self.result(state, action)
                 elif(x[1] == 'd'):
                     robot_pos = state.board.robot_position(x[0])
                     state.board.change_RobotsPos(x[0], (robot_pos[0]+1, robot_pos[1]))
-                    state.board.valor_h += 1
                     self.result(state, action)
 
         return state
@@ -252,12 +247,13 @@ class RicochetRobots(Problem):
 
     def h(self, node: Node):
         """ Função heuristica utilizada para a procura A*. """
-        tuple_obj = tuple(map(operator.sub, node.state.board.obj_pos, node.state.board.robot_position(node.state.board.obj_color))) 
+        print(node.action)
+        n_state = self.result(node.state, node.action)
+        tuple_obj = tuple(map(operator.sub, n_state.board.obj_pos, n_state.board.robot_position(n_state.board.obj_color))) 
         dist_obj = (abs(tuple_obj[0]) + abs(tuple_obj[1]))
-        dist_res = node.state.board.valor_h
-        print(dist_res)
+        n_state.board.get_robots()
         print(dist_obj)
-        return dist_obj + dist_res
+        return dist_obj
 
 if __name__ == "__main__":
     # TODO:
@@ -268,5 +264,14 @@ if __name__ == "__main__":
     
     board = parse_instance(sys.argv[1])
     problem = RicochetRobots(board)
+    problem.initial.board.get_robots()
     solution_node = astar_search(problem)
-    print(solution_node)
+    #print(problem.actions(problem.initial))
+    #state = problem.result(problem.initial, ('Y', 'u'))
+    #print(problem.actions(problem.initial))
+    #state = problem.result(state, ('Y', 'd'))
+    #print(problem.actions(problem.initial))
+    #state = problem.result(state, ('R', 'r'))
+    #final_state = problem.result(state, ('R', 'u'))
+    print(solution_node.action)
+    #print(solution_node)
