@@ -347,5 +347,7 @@ if __name__ == "__main__":
         solution_node = solution_node.parent
     
     result.reverse()
-
-    print(result)
+    print(len(result))
+    
+    for i in result:
+        print(i[0], i[1])
