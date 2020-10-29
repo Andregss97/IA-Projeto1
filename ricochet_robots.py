@@ -336,3 +336,16 @@ if __name__ == "__main__":
     problem = RicochetRobots(board)
 
     solution_node = astar_search(problem)
+
+    result = []
+
+    while(1):
+
+        if(solution_node.action == None):
+            break
+        result.append(solution_node.action)
+        solution_node = solution_node.parent
+    
+    result.reverse()
+
+    print(result)
