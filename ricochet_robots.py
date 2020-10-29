@@ -11,6 +11,73 @@ from search import Problem, Node, astar_search, breadth_first_tree_search, \
 import sys
 import operator
 
+#------------------------------------------------------------------------------------------------------#
+
+def verification_up(robot_pos: tuple, robot_color: str):
+
+    if((robot_pos[0]-1)>0):
+        if(board.robotIsInPos(((robot_pos[0]-1), robot_pos[1])) == False):
+            if(board.wallIsInPos(robot_pos)):
+                if(board.getWallDir(robot_pos) != 'u'):
+                    return True
+            
+            elif(board.wallIsInPos((robot_pos[0]-1, robot_pos[1]))):
+                if(board.getWallDir((robot_pos[0]-1, robot_pos[1])) != 'd'):
+                    return True
+
+            else:
+                return True
+    return False
+
+def verification_down(robot_pos: tuple, robot_color: str):
+
+    if((robot_pos[0]+1)<=board.size):
+        if(board.robotIsInPos(((robot_pos[0]+1), robot_pos[1])) == False):
+            if(board.wallIsInPos(robot_pos)):
+                if(board.getWallDir(robot_pos) != 'd'):
+                    return True
+            
+            elif(board.wallIsInPos((robot_pos[0]+1, robot_pos[1]))):
+                if(board.getWallDir((robot_pos[0]+1, robot_pos[1])) != 'u'):
+                    return True
+
+            else:
+                return True
+    return False
+
+def verification_left(robot_pos: tuple, robot_color: str):
+
+    if((robot_pos[1]-1)>0):
+        if(board.robotIsInPos(((robot_pos[0]), robot_pos[1]-1)) == False):
+            if(board.wallIsInPos(robot_pos)):
+                if(board.getWallDir(robot_pos) != 'l'):
+                    return True
+
+            elif(board.wallIsInPos((robot_pos[0], robot_pos[1]-1))):
+                if(board.getWallDir((robot_pos[0], robot_pos[1]-1)) != 'r'):
+                    return True
+
+            else:
+                return True
+    return False
+
+def verification_right(robot_pos: tuple, robot_color: str):
+
+    if((robot_pos[1]+1)<=board.size):
+        if(board.robotIsInPos(((robot_pos[0]), robot_pos[1]+1)) == False):
+            if(board.wallIsInPos(robot_pos)):
+                if(board.getWallDir(robot_pos) != 'r'):
+                    return True
+            
+            elif(board.wallIsInPos((robot_pos[0], robot_pos[1]+1))):
+                if(board.getWallDir((robot_pos[0], robot_pos[1]+1)) != 'l'):
+                    return True
+
+            else:
+                return True
+    return False
+
+#------------------------------------------------------------------------------------------------------#
 
 class RRState:
     state_id = 0
@@ -144,64 +211,14 @@ class RicochetRobots(Problem):
         actions = []
         board = state.board
         for robot in board.Robots:
-
-#------------------------------------------------------------------------------------------#            
-            if((robot.pos[0]-1)>0):
-                if(board.robotIsInPos(((robot.pos[0]-1), robot.pos[1])) == False):
-                    if(board.wallIsInPos(robot.pos)):
-                        if(board.getWallDir(robot.pos) != 'u'):
-                            actions.append((robot.color, 'u'))
-                    
-                    elif(board.wallIsInPos((robot.pos[0]-1, robot.pos[1]))):
-                        if(board.getWallDir((robot.pos[0]-1, robot.pos[1])) != 'd'):
-                            actions.append((robot.color, 'u'))
-
-                    else:
-                        actions.append((robot.color, 'u'))
-
-#------------------------------------------------------------------------------------------#
-            if((robot.pos[0]+1)<=board.size):
-                if(board.robotIsInPos(((robot.pos[0]+1), robot.pos[1])) == False):
-                    if(board.wallIsInPos(robot.pos)):
-                        if(board.getWallDir(robot.pos) != 'd'):
-                            actions.append((robot.color, 'd'))
-                    
-                    elif(board.wallIsInPos((robot.pos[0]+1, robot.pos[1]))):
-                        if(board.getWallDir((robot.pos[0]+1, robot.pos[1])) != 'u'):
-                            actions.append((robot.color, 'd'))
-
-                    else:
-                        actions.append((robot.color, 'd'))
-
-#------------------------------------------------------------------------------------------#
-            if((robot.pos[1]-1)>0):
-                if(board.robotIsInPos(((robot.pos[0]), robot.pos[1]-1)) == False):
-                    if(board.wallIsInPos(robot.pos)):
-                        if(board.getWallDir(robot.pos) != 'l'):
-                            actions.append((robot.color, 'l'))
-
-                    elif(board.wallIsInPos((robot.pos[0], robot.pos[1]-1))):
-                        if(board.getWallDir((robot.pos[0], robot.pos[1]-1)) != 'r'):
-                            actions.append((robot.color, 'l'))
-
-                    else:
-                        actions.append((robot.color, 'l'))
-
-#------------------------------------------------------------------------------------------#
-            if((robot.pos[1]+1)<=board.size):
-                if(board.robotIsInPos(((robot.pos[0]), robot.pos[1]+1)) == False):
-                    if(board.wallIsInPos(robot.pos)):
-                        if(board.getWallDir(robot.pos) != 'r'):
-                            actions.append((robot.color, 'r'))
-                    
-                    elif(board.wallIsInPos((robot.pos[0], robot.pos[1]+1))):
-                        if(board.getWallDir((robot.pos[0], robot.pos[1]+1)) != 'l'):
-                            actions.append((robot.color, 'r'))
-
-                    else:
-                        actions.append((robot.color, 'r'))
-
-#------------------------------------------------------------------------------------------#
+            if(verification_up(robot.pos, robot.color)):
+                actions.append((robot.color, 'u'))
+            if(verification_down(robot.pos, robot.color)):
+                actions.append((robot.color, 'd'))
+            if(verification_left(robot.pos, robot.color)):
+                actions.append((robot.color, 'l'))
+            if(verification_right(robot.pos, robot.color)):
+                actions.append((robot.color, 'r'))
 
         return actions
 
@@ -210,28 +227,55 @@ class RicochetRobots(Problem):
         'state' passado como argumento. A ação retornada deve ser uma
         das presentes na lista obtida pela execução de
         self.actions(state). """
-        actions = self.actions(state)
 
-        for x in actions:
-            if(x == action):
-                if(x[1] == 'l'):
-                    robot_pos = state.board.robot_position(x[0])
-                    state.board.change_RobotsPos(x[0], (robot_pos[0], robot_pos[1]-1))
-                    self.result(state, action)
-                elif(x[1] == 'r'):
-                    robot_pos = state.board.robot_position(x[0])
-                    state.board.change_RobotsPos(x[0], (robot_pos[0], robot_pos[1]+1))
-                    self.result(state, action)
-                elif(x[1] == 'u'):
-                    robot_pos = state.board.robot_position(x[0])
-                    state.board.change_RobotsPos(x[0], (robot_pos[0]-1, robot_pos[1]))
-                    self.result(state, action)
-                elif(x[1] == 'd'):
-                    robot_pos = state.board.robot_position(x[0])
-                    state.board.change_RobotsPos(x[0], (robot_pos[0]+1, robot_pos[1]))
-                    self.result(state, action)
+        board = state.board
 
-        return state
+        new_board = Board(board.size)
+        new_board.init_robots(board.Robots)
+        new_board.Walls_nr(board.nrWalls)
+        new_board.init_walls(board.Walls)
+        new_board.set_Objective(board.obj_color, board.obj_pos)
+
+        new_state = RRState(new_board)
+
+        print("POSITIONS:", new_state.board.get_robots())
+        if(action[1] == 'l'):
+            
+            while(1):
+                robot_pos = new_state.board.robot_position(action[0])
+                if(verification_left(robot_pos, action[0])):
+                    new_state.board.change_RobotsPos(action[0], (robot_pos[0], robot_pos[1]-1))
+                else:
+                    break
+
+        elif(action[1] == 'r'):
+
+            while(1):
+                robot_pos = new_state.board.robot_position(action[0])
+                if(verification_right(robot_pos, action[0])):
+                    new_state.board.change_RobotsPos(action[0], (robot_pos[0], robot_pos[1]+1))
+                else:
+                    break
+
+        elif(action[1] == 'u'):
+
+            while(1):
+                robot_pos = new_state.board.robot_position(action[0])
+                if(verification_up(robot_pos, action[0])):
+                    new_state.board.change_RobotsPos(action[0], (robot_pos[0]-1, robot_pos[1]))
+                else:
+                    break
+
+        elif(action[1] == 'd'):
+
+            while(1):
+                robot_pos = new_state.board.robot_position(action[0])
+                if(verification_down(robot_pos, action[0])):
+                    new_state.board.change_RobotsPos(action[0], (robot_pos[0]+1, robot_pos[1]))
+                else:
+                    break
+
+        return new_state
                 
 
 
@@ -247,13 +291,12 @@ class RicochetRobots(Problem):
 
     def h(self, node: Node):
         """ Função heuristica utilizada para a procura A*. """
-        print(node.action)
+        """print(node.action)
         n_state = self.result(node.state, node.action)
         tuple_obj = tuple(map(operator.sub, n_state.board.obj_pos, n_state.board.robot_position(n_state.board.obj_color))) 
         dist_obj = (abs(tuple_obj[0]) + abs(tuple_obj[1]))
-        n_state.board.get_robots()
-        print(dist_obj)
-        return dist_obj
+        print(dist_obj)"""
+        return 1
 
 if __name__ == "__main__":
     # TODO:
@@ -265,13 +308,21 @@ if __name__ == "__main__":
     board = parse_instance(sys.argv[1])
     problem = RicochetRobots(board)
     problem.initial.board.get_robots()
-    solution_node = astar_search(problem)
+
+    solution_node = breadth_first_tree_search(problem)
+
+    problem.initial.board.get_robots()
+    
+    """#print(problem.actions(problem.initial))
+    state = problem.result(problem.initial, ('Y', 'u'))
     #print(problem.actions(problem.initial))
-    #state = problem.result(problem.initial, ('Y', 'u'))
+    problem.initial.board.get_robots()
+    state = problem.result(state, ('Y', 'd'))
     #print(problem.actions(problem.initial))
-    #state = problem.result(state, ('Y', 'd'))
+    problem.initial.board.get_robots()
+    state = problem.result(state, ('R', 'r'))
     #print(problem.actions(problem.initial))
-    #state = problem.result(state, ('R', 'r'))
-    #final_state = problem.result(state, ('R', 'u'))
-    print(solution_node.action)
-    #print(solution_node)
+    problem.initial.board.get_robots()
+    final_state = problem.result(state, ('R', 'u'))
+    #print(problem.actions(problem.initial))
+    problem.initial.board.get_robots()"""
